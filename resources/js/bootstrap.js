@@ -26,3 +26,10 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     forceTLS: true
 // });
+
+// import '@/popper.min.js';
+// import '@/bootstrap.min.js';
+// import '@/volt.js';
+
+
+
