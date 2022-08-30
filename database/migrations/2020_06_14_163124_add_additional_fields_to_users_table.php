@@ -17,7 +17,6 @@ class AddAdditionalFieldsToUsersTable extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->string('phone_number')->nullable();
             $table->boolean('is_active')->nullable();
-            $table->integer('company_id')->nullable();
         });
     }
 

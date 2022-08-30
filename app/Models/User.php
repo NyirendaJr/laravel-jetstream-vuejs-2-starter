@@ -2,16 +2,24 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Prettus\Repository\Contracts\Transformable;
+use Prettus\Repository\Traits\TransformableTrait;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable
+/**
+ * Class User.
+ *
+ * @package namespace App\Models;
+ */
+class User extends Authenticatable implements Transformable
 {
+    use TransformableTrait;
     use HasApiTokens;
     use HasFactory;
     use HasProfilePhoto;
@@ -58,4 +66,11 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    /**
+     * Set permissions guard to API by default
+     * @var string
+     */
+    protected string $guard_name = 'sanctum';
+
 }
