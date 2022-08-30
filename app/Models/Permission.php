@@ -22,7 +22,9 @@ class Permission extends \Spatie\Permission\Models\Permission implements Transfo
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'description',
+    ];
 
     protected string $guard_name = 'sanctum';
 

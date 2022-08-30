@@ -54,4 +54,16 @@ final class Acl
     const PERMISSION_VIEW_USER_PERMISSION = 'view_user_permission';
     const PERMISSION_UPDATE_USER_PERMISSION = 'update_user_permission';
     const PERMISSION_DELETE_USER_PERMISSION = 'delete_user_permission';
+
+    /*
+    |--------------------------------------------------------------------------
+    | Menu Permissions
+    |--------------------------------------------------------------------------
+    |
+    |
+    */
+    const PERMISSION_VIEW_MENU_ROLES = 'view menu roles';
+    const PERMISSION_VIEW_MENU_PERMISSION = 'view menu permissions';
+    const PERMISSION_VIEW_MENU_USERS = 'view menu users';
+    const PERMISSION_VIEW_MENU_ADMIN = 'view menu admin';
 }

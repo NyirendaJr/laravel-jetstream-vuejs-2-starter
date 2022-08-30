@@ -93,7 +93,7 @@
             }
         }
     },
-    "unitCategoryIndex": "Unit Categories",
+    "adminUsersIndex": "Users",
     "admin": "Admin",
     "permissionsIndex": "Permissions",
     "rolesIndex": "Roles",

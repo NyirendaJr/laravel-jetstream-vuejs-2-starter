@@ -66,7 +66,7 @@ class UsersTableSeeder extends Seeder
             return [];
         }
 
-        //attach all permissions to the superuser roles
+        // attach all permissions to the superuser roles
         $superUserRole = Role::findByName(Acl::ROLE_SUPERUSER);
         $permissions = Permission::query()->where('guard_name', 'sanctum')->get();
         $superUserRole->syncPermissions($permissions);
@@ -81,7 +81,7 @@ class UsersTableSeeder extends Seeder
         $superUser = $this->repository->findByField('email', 'thelabdevtz@gmail.com')->first();
 
         if(!$superUser) {
-            $superUser = $this->repository->create($superUserPayload);
+            $superUser = $this->repository->firstOrCreate($superUserPayload);
         }
 
         $superUser->syncRoles($superUserRole);

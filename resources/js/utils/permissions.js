@@ -6,7 +6,6 @@
 export default function checkPermission(value) {
     if (value && value instanceof Array && value.length > 0) {
         const permissions = this.$page.props.permissions;
-        console.log(permissions);
         const requiredPermissions = value;
 
         return permissions.some(permission => {

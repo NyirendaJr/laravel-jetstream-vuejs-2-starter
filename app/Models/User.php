@@ -11,6 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * Class User.
@@ -25,6 +26,7 @@ class User extends Authenticatable implements Transformable
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
+    use HasRoles;
 
     /**
      * The attributes that are mass assignable.

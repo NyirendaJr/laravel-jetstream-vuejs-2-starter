@@ -31940,6 +31940,18 @@ video {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.v-data-table .v-data-table-header tr th {
+  font-size: 16px !important;
+}
+
+.v-data-table tr td {
+  font-size: 18px !important;
+}
+
+html {
+  font-family: Scorecard-Averta, sans-serif, appleLogo !important;
+}
+
 @media (min-width: 640px) {
   .sm\:container {
     width: 100%;

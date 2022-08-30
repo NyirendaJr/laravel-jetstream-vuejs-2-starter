@@ -16,7 +16,7 @@
                 </template>
                 <template #activator>
                     <v-list-item-content>
-                        <v-list-item-title v-text="item.title"/>
+                        <v-list-item-title v-text="item.title" class="text--darken-4" />
                     </v-list-item-content>
                 </template>
                 <nav-list-item

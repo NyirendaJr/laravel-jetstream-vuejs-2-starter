@@ -14,7 +14,7 @@
                 </v-tooltip>
             </v-list-item-icon>
             <v-list-item-content>
-                <v-list-item-title v-text="item.title"/>
+                <v-list-item-title v-text="item.title" class="text--darken-4"/>
             </v-list-item-content>
             <v-list-item-action v-if="item.isNew">
                 <v-icon color="green">mdi-new-box</v-icon>

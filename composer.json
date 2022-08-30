@@ -13,10 +13,12 @@
         "laravel/framework": "^8.65",
         "laravel/jetstream": "2.1.4",
         "laravel/sanctum": "^2.6",
+        "laravel/telescope": "^4.9",
         "laravel/tinker": "^2.5",
         "prettus/l5-repository": "^2.8",
         "spatie/laravel-permission": "^5.5",
-        "tightenco/ziggy": "^1.0"
+        "tightenco/ziggy": "^1.0",
+        "wulfheart/pretty_routes": "^0.3.0"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

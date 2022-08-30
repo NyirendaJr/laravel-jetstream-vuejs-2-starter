@@ -3,6 +3,9 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\Admin\PermissionsController;
+use App\Http\Controllers\Admin\RolesController;
+use App\Http\Controllers\Admin\UsersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,3 +30,20 @@ Route::get('/', function () {
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->name('dashboard');
+
+
+Route::group(['middleware' => 'auth:sanctum'], function() {
+    // admin
+    Route::group(['prefix' => 'admin'], function () {
+        Route::resource('permissions', PermissionsController::class, ['as' => 'admin']);
+        Route::resource('roles', RolesController::class, ['as' => 'admin']);
+        Route::resource('users', UsersController::class, ['as' => 'admin']);
+    });
+
+    // app
+    Route::group(['prefix' => 'app'], function () {
+
+    });
+
+    // Route::get('not-found', [NotFoundController::class, 'show'])->name('not-found');
+});

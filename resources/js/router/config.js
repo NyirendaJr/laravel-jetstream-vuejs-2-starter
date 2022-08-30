@@ -10,7 +10,7 @@ export const routes = [
         children: [
             {
                 path: '/admin/permissions',
-                name: 'permissions.index',
+                name: 'admin.permissions.index',
                 meta: {
                     title: 'permissionsIndex',
                     permissions: ['view menu permissions'],
@@ -18,7 +18,7 @@ export const routes = [
             },
             {
                 path: '/admin/roles',
-                name: 'roles.index',
+                name: 'admin.roles.index',
                 meta: {
                     title: 'rolesIndex',
                     permissions: ['view menu roles'],
@@ -26,7 +26,7 @@ export const routes = [
             },
             {
                 path: '/admin/users',
-                name: 'users.index',
+                name: 'admin.users.index',
                 meta: {
                     title: 'adminUsersIndex',
                     permissions: ['view menu users']
