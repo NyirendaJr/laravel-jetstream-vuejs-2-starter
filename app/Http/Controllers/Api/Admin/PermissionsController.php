@@ -3,15 +3,17 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Api\Response;
-use App\Http\Requests\PermissionCreateRequest;
 use App\Http\Requests\PermissionUpdateRequest;
+use App\Http\Resources\PermissionResource;
 use App\Repositories\PermissionRepository;
 use App\Validators\PermissionValidator;
 use Illuminate\Http\JsonResponse;
-use Prettus\Repository\Exceptions\RepositoryException;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
+use Symfony\Component\HttpFoundation\Response;
+
 
 /**
  * Class PermissionsController.
@@ -35,38 +37,12 @@ class PermissionsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return JsonResponse
-     * @throws RepositoryException
+     * @param Request $request
+     * @return AnonymousResourceCollection
      */
-    public function index(): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $permissions = $this->repository->paginate();
-
-        return response()->json([
-            'data' => $permissions,
-        ]);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        $permission = $this->repository->find($id);
-
-        if (request()->wantsJson()) {
-
-            return response()->json([
-                'data' => $permission,
-            ]);
-        }
-
-        return view('permissions.show', compact('permission'));
+        return PermissionResource::collection($this->repository->get($request->all()));
     }
 
 
@@ -76,7 +52,6 @@ class PermissionsController extends Controller
      * @param  PermissionUpdateRequest $request
      * @param  int  $id
      * @return JsonResponse
-     * @throws ValidatorException
      */
     public function update(PermissionUpdateRequest $request, int $id): JsonResponse
     {
@@ -84,14 +59,13 @@ class PermissionsController extends Controller
 
             $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
 
-            $permission = $this->repository->update($request->all(), $id);
+            $this->repository->update($id, $request->all());
 
-            $response = [
-                'message' => 'Permission updated.',
-                'data'    => $permission->toArray(),
-            ];
-
-            return response()->json($response);
+            return response()
+                ->json([
+                    'status' => true,
+                    'statusCode' => Response::HTTP_OK
+                ]);
 
         } catch (ValidatorException $e) {
 

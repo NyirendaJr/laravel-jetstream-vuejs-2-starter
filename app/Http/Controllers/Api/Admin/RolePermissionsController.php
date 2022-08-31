@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Repositories\RoleRepository;
 use Illuminate\Http\Request;
+use App\Http\Resources\PermissionResource;
 
 class RolePermissionsController extends Controller
 {
@@ -22,7 +23,7 @@ class RolePermissionsController extends Controller
     public function index(int $roleId): mixed
     {
         return $this->repository->find($roleId)->permissions->map(function ($permission) {
-            return $permission->presenter();
+            return $permission;
         });
     }
 }

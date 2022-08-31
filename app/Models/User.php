@@ -18,9 +18,9 @@ use Spatie\Permission\Traits\HasRoles;
  *
  * @package namespace App\Models;
  */
-class User extends Authenticatable implements Transformable
+class User extends Authenticatable
 {
-    use TransformableTrait;
+
     use HasApiTokens;
     use HasFactory;
     use HasProfilePhoto;

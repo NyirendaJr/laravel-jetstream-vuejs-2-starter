@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Api\Response;
 use App\Http\Requests\RoleCreateRequest;
 use App\Http\Requests\RoleUpdateRequest;
+use App\Http\Resources\RoleResource;
 use App\Repositories\RoleRepository;
 use App\Validators\RoleValidator;
 use Illuminate\Http\JsonResponse;
-use Prettus\Repository\Exceptions\RepositoryException;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Arr;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
 use App\Http\Controllers\Controller;
@@ -36,18 +39,17 @@ class RolesController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return JsonResponse
-     * @throws RepositoryException
+     * @param Request $request
+     * @return AnonymousResourceCollection
      */
-    public function index(): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $roles = $this->repository->all();
+        $params = [
+            'paginate' => Arr::get($request, 'paginate', ''),
+            'is_superuser' => true
+        ];
 
-        return response()->json([
-            'data' => $roles,
-        ]);
-
+        return RoleResource::collection($this->repository->get($params));
     }
 
     /**

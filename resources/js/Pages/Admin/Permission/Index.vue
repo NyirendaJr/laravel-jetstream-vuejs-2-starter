@@ -113,7 +113,7 @@
             max-width="924"
             persistent
         >
-            <v-card flat>
+            <v-card tile>
                 <v-card-title class="text-h6 grey lighten-2 mb-3">
                     Edit permission
                 </v-card-title>
@@ -232,14 +232,14 @@ export default {
         async getPermissions() {
             this.permissionsTableLoading = true
             const response = await API.Permission.getPermissions(this.listQuery)
-            const { data, total, per_page } = response.data
+            const { data, meta } = response
             console.log(response)
             this.permissions = data
             this.permissions.forEach((element, index) => {
                 element['index'] = (this.listQuery.page - 1) * this.listQuery.per_page + index + 1;
             })
-            this.serverItemsLength = total
-            this.itemsPerPage = per_page
+            this.serverItemsLength = meta.total
+            this.itemsPerPage = meta.per_page
             this.permissionsTableLoading = false
         },
 
@@ -274,7 +274,7 @@ export default {
                 } else {
                     this.progressBarVisible = false
                     this.editPermissionDialogFormVisible = false
-                    this.$toast.success(message)
+                    this.$toast.success("Permission updated successfully")
                     await this.getPermissions()
                 }
             } catch (e) {
