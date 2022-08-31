@@ -7,6 +7,8 @@ use Prettus\Repository\Criteria\RequestCriteria;
 use App\Repositories\PermissionRepository;
 use App\Models\Permission;
 use App\Validators\PermissionValidator;
+use Prettus\Repository\Exceptions\RepositoryException;
+use App\Presenters\PermissionPresenter;
 
 /**
  * Class PermissionRepositoryEloquent.
@@ -20,7 +22,7 @@ class PermissionRepositoryEloquent extends BaseRepository implements PermissionR
      *
      * @return string
      */
-    public function model()
+    public function model(): string
     {
         return Permission::class;
     }
@@ -28,9 +30,9 @@ class PermissionRepositoryEloquent extends BaseRepository implements PermissionR
     /**
     * Specify Validator class name
     *
-    * @return mixed
-    */
-    public function validator()
+    * @return string
+     */
+    public function validator(): string
     {
 
         return PermissionValidator::class;
@@ -39,10 +41,17 @@ class PermissionRepositoryEloquent extends BaseRepository implements PermissionR
 
     /**
      * Boot up the repository, pushing criteria
+     * @throws RepositoryException
      */
     public function boot()
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
-    
+
+
+    public function presenter(): string
+    {
+        return PermissionPresenter::class;
+    }
+
 }

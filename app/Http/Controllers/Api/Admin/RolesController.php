@@ -7,6 +7,8 @@ use App\Http\Requests\RoleCreateRequest;
 use App\Http\Requests\RoleUpdateRequest;
 use App\Repositories\RoleRepository;
 use App\Validators\RoleValidator;
+use Illuminate\Http\JsonResponse;
+use Prettus\Repository\Exceptions\RepositoryException;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
 use App\Http\Controllers\Controller;
@@ -18,15 +20,7 @@ use App\Http\Controllers\Controller;
  */
 class RolesController extends Controller
 {
-    /**
-     * @var RoleRepository
-     */
-    protected $repository;
 
-    /**
-     * @var RoleValidator
-     */
-    protected $validator;
 
     /**
      * RolesController constructor.
@@ -34,30 +28,26 @@ class RolesController extends Controller
      * @param RoleRepository $repository
      * @param RoleValidator $validator
      */
-    public function __construct(RoleRepository $repository, RoleValidator $validator)
-    {
-        $this->repository = $repository;
-        $this->validator  = $validator;
-    }
+    public function __construct(
+        public RoleRepository $repository,
+        public RoleValidator $validator
+    ){}
 
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
+     * @throws RepositoryException
      */
-    public function index()
+    public function index(): JsonResponse
     {
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
         $roles = $this->repository->all();
 
-        if (request()->wantsJson()) {
+        return response()->json([
+            'data' => $roles,
+        ]);
 
-            return response()->json([
-                'data' => $roles,
-            ]);
-        }
-
-        return view('roles.index', compact('roles'));
     }
 
     /**
