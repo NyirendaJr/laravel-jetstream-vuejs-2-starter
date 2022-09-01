@@ -9,13 +9,10 @@ use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Repositories\UserRepository;
-use App\Validators\UserValidator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Arr;
-use Prettus\Validator\Contracts\ValidatorInterface;
-use Prettus\Validator\Exceptions\ValidatorException;
 use App\Http\Controllers\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -28,8 +25,7 @@ class UsersController extends Controller
 {
     public function __construct
     (
-        public UserRepository $repository,
-        public UserValidator $validator
+        public UserRepository $repository
     )
     {
         $this->middleware('permission:'.Acl::PERMISSION_CREATE_USER, ['only' => ['store']]);
@@ -75,18 +71,6 @@ class UsersController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-
-    /**
      * Update the specified resource in storage.
      *
      * @param UpdateUserFormRequest $request
@@ -102,16 +86,5 @@ class UsersController extends Controller
                 'status' => true,
                 'message' => "User update successfully"
             ]);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 }

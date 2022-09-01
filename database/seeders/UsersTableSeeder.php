@@ -3,13 +3,12 @@
 namespace Database\Seeders;
 
 use App\Data\Acl;
-use App\Models\Permission;
-use App\Models\Role;
+use App\Models\Permission\Permission;
+use App\Models\Role\Role;
+use App\Repositories\UserRepository;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use App\Repositories\UserRepository;
-use App\Models\User;
 
 class UsersTableSeeder extends Seeder
 {

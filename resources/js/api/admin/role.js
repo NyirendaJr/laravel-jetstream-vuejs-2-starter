@@ -8,3 +8,12 @@ export function getRoles(params) {
         params: params
     })
 }
+
+
+export function createRole(data) {
+    return request({
+        url: '/admin/roles',
+        method: 'post',
+        data: data
+    })
+}

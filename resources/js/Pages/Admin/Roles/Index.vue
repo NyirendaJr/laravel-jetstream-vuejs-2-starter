@@ -14,6 +14,18 @@
             </v-btn>
         </template>
 
+        <v-toolbar flat class="grey lighten-3">
+            <v-spacer />
+            <v-btn
+                color="primary"
+                @click="openAddRoleDialog"
+                v-if="checkPermission(['create_role'])"
+            >
+                <v-icon>mdi-plus</v-icon>
+                Add Role
+            </v-btn>
+        </v-toolbar>
+
         <v-container>
             <v-row>
                 <v-col cols="12">
@@ -90,10 +102,11 @@
                                     multiple
                                     small-chips
                                     filled
+                                    item-value="id"
+                                    item-text="name"
                                     label="Select Permissions"
                                     placeholder="Select permissions to assign to a role"
-                                    :loading="permissionsLoading"
-                                />
+                                    :loading="permissionsLoading" />
                             </v-col>
                         </v-row>
                         <v-row>
@@ -190,22 +203,76 @@
 
         <!-- progress bar -->
         <progress-bar :visible="progressBarVisible" />
+
+        <!-- add new role dialog -->
+        <v-dialog
+            persistent
+            max-width="924"
+            v-model="AddRoleDialog"
+        >
+            <v-card>
+                <v-card-title
+                    class="text-h6 grey lighten-2 mb-3"
+                >
+                    Add Role
+                </v-card-title>
+                <v-divider />
+                <v-card-text>
+                    <validation-observer
+                        ref="AddRoleFormValidation"
+                    >
+                        <v-form ref="AddRoleForm">
+                            <validation-provider v-slot="{ errors }" name="name">
+                                <v-text-field
+                                    v-model="role.name"
+                                    label="Role Name"
+                                    :error-messages="errors[0]"
+                                    outlined
+                                    dense
+                                />
+                            </validation-provider>
+                        </v-form>
+                    </validation-observer>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer />
+                    <v-btn
+                        color="blue darken-1"
+                        text @click="AddRoleDialog=false"
+                    >
+                        Close
+                    </v-btn>
+                    <v-btn
+                        tile
+                        color="success"
+                        @click="createRole"
+                    >
+                        <v-icon>mdi-content-save-outline</v-icon>
+                        Save
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </app-layout>
 </template>
 
 <script>
-import AppLayout from "@/Layouts/AppLayout";
+import AppLayout from "@/Layouts/AppLayout"
 import API from '@/api'
 import checkPermission from '@/utils/permissions'
-import commonMixins from "@/mixins/commonMixins";
-import ProgressBar from "@/components/core/ProgressBar";
+import commonMixins from "@/mixins/commonMixins"
+import ProgressBar from "@/components/core/ProgressBar"
+import { ValidationObserver, ValidationProvider } from "vee-validate"
+
 
 export default {
     name: "RolesIndex",
     mixins: [commonMixins],
     components: {
         AppLayout,
-        ProgressBar
+        ProgressBar,
+        ValidationObserver,
+        ValidationProvider
     },
     data() {
         return {
@@ -217,6 +284,7 @@ export default {
             itemsPerPage: null,
             serverItemsLength: null,
             roles: [],
+            role: {},
             rolesTableHeader: [
                 {text: 'S/N', value: 'index'},
                 {text: 'NAME', value: 'name'},
@@ -237,7 +305,9 @@ export default {
             selectedPermissions: [],
             revokePermissionFromRoleDialog: false,
             currentPermission: {},
-            progressBarVisible: false
+            progressBarVisible: false,
+            addRolePermissionDialogVisible: false,
+            AddRoleDialog: false
         }
     },
 
@@ -277,13 +347,14 @@ export default {
             this.permissionsLoading = true
             const payload = {paginate: 'no'}
             const { data } = await API.Permission.getPermissions(payload);
-            data.forEach((permission) => {
-                this.permissions.push({
-                    text: permission.name,
-                    value: permission.id,
-                    disabled: this.checkIfRoleHasPermission(permission.id),
-                })
-            });
+            this.permissions = data
+            // data.forEach((permission) => {
+            //     this.permissions.push({
+            //         text: permission.name,
+            //         value: permission.id,
+            //         disabled: this.checkIfRoleHasPermission(permission.id),
+            //     })
+            // });
             this.permissionsLoading = false
         },
 
@@ -351,6 +422,31 @@ export default {
                 this.revokePermissionFromRoleDialog = false
                 await this.getRolePermissions()
                 await this.getPermissions()
+            }
+        },
+
+        openAddRoleDialog() {
+            this.AddRoleDialog = true
+        },
+
+        async createRole() {
+
+            console.log('createRole')
+            this.progressBarVisible = true
+
+            try {
+                const {error, message} = await API.Role.createRole(this.role)
+                if (error) {
+                    this.progressBarVisible = false
+                    this.$refs.AddRoleFormValidation.setErrors(message)
+                } else {
+                    this.progressBarVisible = false
+                    this.AddRoleDialog = false
+                    this.$toast.success(message)
+                }
+            } catch (e) {
+                this.progressBarVisible = false
+                this.$toast.error(e.message)
             }
         }
     }

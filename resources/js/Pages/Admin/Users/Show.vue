@@ -440,12 +440,10 @@ export default {
         checkPermission,
         processUserData() {
             this.user = this.userData.data
+            console.log('process user data')
+            console.log(this.user)
             this.userAssignedRoles = this.user.roles
             this.userAssignedRoles.forEach((element, index) => {
-                element['serial_number'] = index + 1
-            })
-            this.userAssignedStores = this.user.stores
-            this.userAssignedStores.forEach((element, index) => {
                 element['serial_number'] = index + 1
             })
         },

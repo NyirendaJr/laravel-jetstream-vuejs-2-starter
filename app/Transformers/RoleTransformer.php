@@ -2,8 +2,8 @@
 
 namespace App\Transformers;
 
+use App\Models\Role\Role;
 use League\Fractal\TransformerAbstract;
-use App\Models\Role;
 
 /**
  * Class RoleTransformer.
@@ -15,7 +15,7 @@ class RoleTransformer extends TransformerAbstract
     /**
      * Transform the Role entity.
      *
-     * @param \App\Models\Role $model
+     * @param \App\Models\Role\Role $model
      *
      * @return array
      */

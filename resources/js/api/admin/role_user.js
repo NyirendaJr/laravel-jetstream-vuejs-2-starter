@@ -3,7 +3,7 @@ import request from "@/utils/request"
 
 export function createRoleUser(data) {
     return request({
-        url: '/app/role-users',
+        url: '/admin/role-users',
         method: 'post',
         data: data
     })
@@ -12,7 +12,7 @@ export function createRoleUser(data) {
 
 export function deleteRoleUser(userId, roleId) {
     return request({
-        url: `/app/role-users/${userId}/${roleId}`,
+        url: `/admin/role-users/${userId}/${roleId}`,
         method: 'delete',
     })
 }

@@ -3,7 +3,7 @@
         <div class="admin">
             <app-drawer ref="drawer" class="admin_drawer" @drawer:collapsed="mini = !mini"/>
             <app-toolbar class="admin_toolbar" extended @side-icon-click="handleDrawerVisible"/>
-            <v-main style="background-color: #f4f7fc">
+            <v-main class="grey lighten-3">
                 <v-toolbar dense flat>
                     <v-toolbar-title>
                         <slot name="header" />

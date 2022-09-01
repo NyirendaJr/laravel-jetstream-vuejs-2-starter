@@ -31948,6 +31948,10 @@ video {
   font-size: 16px !important;
 }
 
+.v-data-table tr th {
+  font-size: 16px !important;
+}
+
 html {
   font-family: sans-serif;
 }

@@ -2,8 +2,8 @@
 
 namespace App\Transformers;
 
+use App\Models\Permission\Permission;
 use League\Fractal\TransformerAbstract;
-use App\Models\Permission;
 
 /**
  * Class PermissionTransformer.
@@ -15,7 +15,7 @@ class PermissionTransformer extends TransformerAbstract
     /**
      * Transform the Permission entity.
      *
-     * @param \App\Models\Permission $model
+     * @param \App\Models\Permission\Permission $model
      *
      * @return array
      */

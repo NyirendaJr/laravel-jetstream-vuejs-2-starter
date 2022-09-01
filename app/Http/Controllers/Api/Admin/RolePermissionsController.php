@@ -4,15 +4,13 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Data\Acl;
 use App\Http\Controllers\Controller;
-use App\Models\Permission;
+use App\Http\Resources\PermissionResource;
+use App\Models\Permission\Permission;
 use App\Repositories\PermissionRepository;
 use App\Repositories\RoleRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Resources\PermissionResource;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
-use App\Http\Resources\RoleResource;
 
 class RolePermissionsController extends Controller
 {
