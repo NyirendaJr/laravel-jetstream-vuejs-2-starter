@@ -139,10 +139,6 @@ class BaseRepository implements RepositoryInterface
     {
         $q = $this->model->with($with);
 
-        // filter model by store_id
-        if (Helpers::hasValue($params['store_id']))
-            return $q->where('store_id', $params['store_id'])->where('id', $id)->firstOrFail();
-
         return $this->model->with($with)->findOrFail($id);
     }
 

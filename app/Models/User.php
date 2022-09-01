@@ -38,7 +38,9 @@ class User extends Authenticatable
         'email',
         'password',
         'last_login_at',
-        'last_login_ip_address'
+        'last_login_ip_address',
+        'is_active',
+        'phone_number'
     ];
 
     /**
@@ -76,5 +78,19 @@ class User extends Authenticatable
      * @var string
      */
     protected string $guard_name = 'sanctum';
+
+
+    /**
+     * Save company_id to user when creating user
+     * @return void
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        User::creating(function($user) {
+            $user->password = bcrypt('password');
+        });
+    }
 
 }

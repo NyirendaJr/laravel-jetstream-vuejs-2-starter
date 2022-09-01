@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Data\Acl;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -26,5 +27,21 @@ class Permission extends \Spatie\Permission\Models\Permission
     ];
 
     protected string $guard_name = 'sanctum';
+
+    /**
+     * To exclude permission management from the list
+     *
+     * @param $query
+     * @return Builder
+     */
+    public function scopeAllowed($query)
+    {
+        return $query
+            ->where('name', '!=', Acl::PERMISSION_SYNC_PERMISSION)
+            ->where('name', '!=', Acl::PERMISSION_UPDATE_ROLE_PERMISSION)
+            ->where('name', '!=', Acl::PERMISSION_VIEW_MENU_PERMISSION)
+            ->where('name', '!=', Acl::PERMISSION_VIEW_MENU_PERMISSION)
+            ->where('name', '!=', Acl::PERMISSION_VIEW_MENU_ROLES);
+    }
 
 }

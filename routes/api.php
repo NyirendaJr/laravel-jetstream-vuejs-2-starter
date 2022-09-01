@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\BlockUserController;
+use App\Http\Controllers\Api\Admin\ResetUserPasswordController;
 use App\Http\Controllers\Api\Admin\RolePermissionsController;
+use App\Http\Controllers\Api\Admin\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Admin\PermissionsController;
@@ -32,6 +35,11 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
         Route::get('role-permissions/{roleId}', [RolePermissionsController::class, 'index']);
         Route::put('role-permissions/update-role-permissions/{roleId}', [RolePermissionsController::class, 'update']);
         Route::delete('role-permissions/revoke-role-permission/{permissionId}/{roleId}', [RolePermissionsController::class, 'destroy']);
+
+        Route::resource('users', UsersController::class);
+
+        Route::put('recover-user-password/{user_id}', [ResetUserPasswordController::class, 'update']);
+        Route::put('block-user/{user_id}', [BlockUserController::class, 'update']);
     });
 
     //app

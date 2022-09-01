@@ -8,7 +8,8 @@ export function getRolePermissions(roleId) {
     })
 }
 
-export function updateRolePermissions(permissions, roleId) {
+export function updateRolePermissions(roleId, permissions) {
+    console.log(roleId)
     return request({
         url: `/admin/role-permissions/update-role-permissions/${roleId}`,
         method: 'put',

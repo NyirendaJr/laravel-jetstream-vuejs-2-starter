@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Data\Acl;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 
@@ -22,5 +23,14 @@ class Role extends \Spatie\Permission\Models\Role
      * @var array
      */
     protected $fillable = [];
+
+    /**
+     * Check whether current role is superuser
+     * @return bool
+     */
+    public function isSuperuser(): bool
+    {
+        return $this->name === Acl::ROLE_SUPERUSER;
+    }
 
 }

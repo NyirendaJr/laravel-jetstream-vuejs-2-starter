@@ -2,14 +2,22 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Http\Controllers\Api\Response;
+use App\Data\Acl;
+use App\Http\Requests\CreateUserFormRequest;
+use App\Http\Requests\UpdateUserFormRequest;
 use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\UserUpdateRequest;
+use App\Http\Resources\UserResource;
 use App\Repositories\UserRepository;
 use App\Validators\UserValidator;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Arr;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
 use App\Http\Controllers\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class UsersController.
@@ -18,186 +26,92 @@ use App\Http\Controllers\Controller;
  */
 class UsersController extends Controller
 {
-    /**
-     * @var UserRepository
-     */
-    protected $repository;
-
-    /**
-     * @var UserValidator
-     */
-    protected $validator;
-
-    /**
-     * UsersController constructor.
-     *
-     * @param UserRepository $repository
-     * @param UserValidator $validator
-     */
-    public function __construct(UserRepository $repository, UserValidator $validator)
+    public function __construct
+    (
+        public UserRepository $repository,
+        public UserValidator $validator
+    )
     {
-        $this->repository = $repository;
-        $this->validator  = $validator;
+        $this->middleware('permission:'.Acl::PERMISSION_CREATE_USER, ['only' => ['store']]);
+        //$this->middleware('permission:'.Acl::PERMISSION_UPDATE_USER, ['only' => ['update']]);
+        $this->middleware('permission:'.Acl::PERMISSION_DELETE_USER, ['only' => ['destroy']]);
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return AnonymousResourceCollection
      */
-    public function index()
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $users = $this->repository->all();
+        $params = [
+            'paginate' => Arr::get($request, 'paginate', 10),
+            'per_page' => Arr::get($request, 'per_page', 10),
+            'keyword' => Arr::get($request, 'keyword', ''),
+            'is_superuser' => true
+        ];
 
-        if (request()->wantsJson()) {
+        return UserResource::collection($this->repository->get($params));
 
-            return response()->json([
-                'data' => $users,
-            ]);
-        }
-
-        return view('users.index', compact('users'));
     }
+
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  UserCreateRequest $request
-     *
-     * @return \Illuminate\Http\Response
-     *
-     * @throws \Prettus\Validator\Exceptions\ValidatorException
+     * @param CreateUserFormRequest $request
+     * @return JsonResponse
      */
-    public function store(UserCreateRequest $request)
+    public function store(CreateUserFormRequest $request): JsonResponse
     {
-        try {
+        $this->repository->create($request->validated());
 
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
-
-            $user = $this->repository->create($request->all());
-
-            $response = [
-                'message' => 'User created.',
-                'data'    => $user->toArray(),
-            ];
-
-            if ($request->wantsJson()) {
-
-                return response()->json($response);
-            }
-
-            return redirect()->back()->with('message', $response['message']);
-        } catch (ValidatorException $e) {
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'error'   => true,
-                    'message' => $e->getMessageBag()
-                ]);
-            }
-
-            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
-        }
+        return response()
+            ->json([
+                'status' => true,
+                'statusCode' => Response::HTTP_OK
+            ]);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int $id
-     *
-     * @return \Illuminate\Http\Response
+     * @param  int  $id
+     * @return Response
      */
     public function show($id)
     {
-        $user = $this->repository->find($id);
-
-        if (request()->wantsJson()) {
-
-            return response()->json([
-                'data' => $user,
-            ]);
-        }
-
-        return view('users.show', compact('user'));
+        //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        $user = $this->repository->find($id);
-
-        return view('users.edit', compact('user'));
-    }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  UserUpdateRequest $request
-     * @param  string            $id
-     *
-     * @return Response
-     *
-     * @throws \Prettus\Validator\Exceptions\ValidatorException
+     * @param UpdateUserFormRequest $request
+     * @param int $id
+     * @return JsonResponse
      */
-    public function update(UserUpdateRequest $request, $id)
+    public function update(UpdateUserFormRequest $request, int $id): JsonResponse
     {
-        try {
+        $this->repository->update($id, $request->validated());
 
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
-
-            $user = $this->repository->update($request->all(), $id);
-
-            $response = [
-                'message' => 'User updated.',
-                'data'    => $user->toArray(),
-            ];
-
-            if ($request->wantsJson()) {
-
-                return response()->json($response);
-            }
-
-            return redirect()->back()->with('message', $response['message']);
-        } catch (ValidatorException $e) {
-
-            if ($request->wantsJson()) {
-
-                return response()->json([
-                    'error'   => true,
-                    'message' => $e->getMessageBag()
-                ]);
-            }
-
-            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
-        }
+        return response()
+            ->json([
+                'status' => true,
+                'statusCode' => Response::HTTP_OK
+            ]);
     }
-
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int $id
-     *
-     * @return \Illuminate\Http\Response
+     * @param  int  $id
+     * @return Response
      */
     public function destroy($id)
     {
-        $deleted = $this->repository->delete($id);
-
-        if (request()->wantsJson()) {
-
-            return response()->json([
-                'message' => 'User deleted.',
-                'deleted' => $deleted,
-            ]);
-        }
-
-        return redirect()->back()->with('message', 'User deleted.');
+        //
     }
 }

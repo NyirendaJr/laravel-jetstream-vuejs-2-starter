@@ -68,11 +68,13 @@
         <!-- role permissions dialog -->
         <v-dialog
             persistent
-            max-width="1024"
+            max-width="1264"
             v-model="rolePermissionsDialog"
         >
             <v-card>
-                <v-card-title class="text-h6 grey lighten-2 mb-3">
+                <v-card-title
+                    class="text-h6 grey lighten-2 mb-3"
+                >
                     Edit permissions for {{ currentRole.name }} role
                 </v-card-title>
                 <v-card-text>
@@ -255,7 +257,6 @@ export default {
                 element['index'] = (this.listQuery.page -1) * this.listQuery.per_page + index + 1
             })
             this.rolesTableLoading = false
-            //console.log(this.roles)
         },
 
         handlePageChanged(page) {
@@ -349,6 +350,7 @@ export default {
                 this.$toast.success('Permission revoked successfully')
                 this.revokePermissionFromRoleDialog = false
                 await this.getRolePermissions()
+                await this.getPermissions()
             }
         }
     }

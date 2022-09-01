@@ -27,9 +27,9 @@ class UserLoginAt
      */
     public function handle(Login $event): void
     {
-        $this->userRepository->update([
+        $this->userRepository->update($event->user['id'], [
             'last_login_at' => Carbon::now(),
             'last_login_ip_address' => request()->getClientIp()
-        ], $event->user['id']);
+        ]);
     }
 }
