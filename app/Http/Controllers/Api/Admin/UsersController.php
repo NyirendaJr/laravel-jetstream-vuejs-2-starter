@@ -100,7 +100,7 @@ class UsersController extends Controller
         return response()
             ->json([
                 'status' => true,
-                'statusCode' => Response::HTTP_OK
+                'message' => "User update successfully"
             ]);
     }
 

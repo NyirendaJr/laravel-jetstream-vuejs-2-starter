@@ -343,7 +343,6 @@ export default {
             this.user.name = item.name
             this.user.email = item.email
             this.user.phone_number = item.phone_number
-            this.user.company_id = item.company_id
             this.editUserDialog = true
         },
 
@@ -354,8 +353,8 @@ export default {
 
             try {
                 const response = await API.User.updateUser(this.currentUser.id, this.user)
-                const {status, statusCode, errors} = response
-                if (!status && statusCode  === 422) {
+                const {error, message} = response
+                if (error) {
                     this.progressBarVisible = false
                     this.$refs.editUserFormValidation.setErrors(errors)
                 } else {
@@ -363,7 +362,7 @@ export default {
                     this.$refs.editUserForm.reset()
                     this.editUserDialog = false
                     await this.getUsers()
-                    this.$toast.success('User updated successfully')
+                    this.$toast.success(message)
                 }
             } catch (e) {
                 this.progressBarVisible = true

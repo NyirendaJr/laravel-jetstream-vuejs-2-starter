@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\Traits\CausesActivity;
 
 /**
  * Class User.
@@ -27,6 +28,7 @@ class User extends Authenticatable
     use TwoFactorAuthenticatable;
     use HasRoles;
     use LogsActivity;
+    use CausesActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -96,7 +98,12 @@ class User extends Authenticatable
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'email', 'phone_number', 'is_active'])
-            ->useLogName('User');
+            ->logAll()
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn($eventName) => "You have {$eventName} user")
+            ->dontLogIfAttributesChangedOnly(['updated_at'])
+            ->dontSubmitEmptyLogs()
+            ->useLogName('user');
     }
+
 }
