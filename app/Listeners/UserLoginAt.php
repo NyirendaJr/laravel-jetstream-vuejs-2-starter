@@ -31,5 +31,7 @@ class UserLoginAt
             'last_login_at' => Carbon::now(),
             'last_login_ip_address' => request()->getClientIp()
         ]);
+
+        activity('login')->event('Login')->log('Login Successfully');
     }
 }
