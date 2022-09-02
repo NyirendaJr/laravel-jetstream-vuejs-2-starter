@@ -464,6 +464,40 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <!-- remove permission from user confirm dialog -->
+        <v-dialog
+            v-model="removePermissionFromUserDialog"
+            persistent
+            max-width="624"
+        >
+            <v-card>
+                <v-card-title class="text-h6 grey lighten-2 mb-3">
+                    Remove Permission
+                </v-card-title>
+                <v-card-text>
+                    Are you sure you want to remove this permission from {{ user.name }} ?
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer />
+                    <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="removePermissionFromUserDialog = false"
+                    >
+                        Close
+                    </v-btn>
+                    <v-btn
+                        tile
+                        color="error"
+                        @click="deletePermissionUser"
+                    >
+                        <v-icon>mdi-content-save-outline</v-icon>
+                        Confirm
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </app-layout>
 </template>
 
@@ -473,6 +507,7 @@ import ProgressBar from "@/components/core/ProgressBar";
 import commonMixins from "@/mixins/commonMixins";
 import API from "@/api";
 import checkPermission from "@/utils/permissions";
+import {deleteUserPermissions} from "@/api/admin/user_permissions";
 
 export default {
     name: "Show",
@@ -508,11 +543,6 @@ export default {
             addRoleToUserDialog: false,
             reAssignRoleFromUserDialog: false,
             currentRole: {},
-            selectedStores: [],
-            stores: [],
-            currentStore: {},
-            addStoreToUserDialog: false,
-            removeStoreFromUserDialog: false,
             newUserPasswordDialog: false,
             newPassword: {},
             userAssignedPermissions: [],
@@ -527,6 +557,7 @@ export default {
             assignPermissionsToUserDialog: false,
             selectedPermissions: [],
             permissionsLoading: false,
+            removePermissionFromUserDialog: false,
         }
     },
 
@@ -567,6 +598,7 @@ export default {
         },
 
         async resetUserPassword() {
+
             this.progressBarVisible = true
 
             try {
@@ -667,7 +699,7 @@ export default {
 
         openRemovePermissionFromUserConfirmDialog(item) {
             this.currentPermission = item
-            this.removePermissionFromUserConfirmDialog = true
+            this.removePermissionFromUserDialog = true
         },
 
         permissionViaRole(permissionId) {
@@ -691,9 +723,52 @@ export default {
         },
 
         async createPermissionUser() {
+            this.progressBarVisible = true
 
+            if (this.selectedPermissions.length === 0) {
+                this.progressBarVisible = false
+                this.$toast.error("Please select at least one permission")
+                return
+            }
+
+            try {
+                const {status} = await API.UserPermission.createUserPermissions(
+                    this.user.id,
+                    {selectedPermissions: this.selectedPermissions}
+                )
+                if (status) {
+                    this.progressBarVisible = false
+                    this.selectedPermissions = []
+                    this.assignPermissionsToUserDialog = false
+                    this.$toast.success("Permission(s) added successfully")
+                    window.location.reload()
+                }
+            } catch (e) {
+                this.progressBarVisible = false
+                this.$toast.error(e.message)
+            }
+        },
+
+        async deletePermissionUser() {
+
+            this.progressBarVisible = true
+
+            try {
+                const {status} = await API.UserPermission.deleteUserPermissions(
+                    this.user.id,
+                    this.currentPermission.id
+                )
+                if (status) {
+                    this.progressBarVisible = false
+                    this.removePermissionFromUserConfirmDialog = false
+                    this.$toast.success("Permission removed successfully")
+                    window.location.reload()
+                }
+            } catch (e) {
+                this.progressBarVisible = false
+                this.$toast.error(e.message)
+            }
         }
-
     }
 }
 </script>

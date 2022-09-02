@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Admin\PermissionsController;
 use App\Http\Controllers\Api\Admin\SyncPermissionController;
 use App\Http\Controllers\Api\Admin\RolesController;
+use App\Http\Controllers\Api\Admin\UserPermissionsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +45,9 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
 
         Route::post('role-users', [RoleUserController::class, 'store']);
         Route::delete('role-users/{user_id}/{role_id}', [RoleUserController::class, 'destroy']);
+
+        Route::put('user-permissions/update-user-permissions/{user_id}', [UserPermissionsController::class, 'update']);
+        Route::delete('user-permissions/revoke-user-permission/{userId}/{permissionId}', [UserPermissionsController::class, 'destroy']);
     });
 
     //app
