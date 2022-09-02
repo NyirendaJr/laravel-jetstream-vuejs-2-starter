@@ -102,8 +102,6 @@
                                     multiple
                                     small-chips
                                     filled
-                                    item-value="id"
-                                    item-text="name"
                                     label="Select Permissions"
                                     placeholder="Select permissions to assign to a role"
                                     :loading="permissionsLoading" />
@@ -347,14 +345,13 @@ export default {
             this.permissionsLoading = true
             const payload = {paginate: 'no'}
             const { data } = await API.Permission.getPermissions(payload);
-            this.permissions = data
-            // data.forEach((permission) => {
-            //     this.permissions.push({
-            //         text: permission.name,
-            //         value: permission.id,
-            //         disabled: this.checkIfRoleHasPermission(permission.id),
-            //     })
-            // });
+            data.forEach((permission) => {
+                this.permissions.push({
+                    text: permission.name,
+                    value: permission.id,
+                    disabled: this.checkIfRoleHasPermission(permission.id),
+                })
+            });
             this.permissionsLoading = false
         },
 
@@ -431,7 +428,6 @@ export default {
 
         async createRole() {
 
-            console.log('createRole')
             this.progressBarVisible = true
 
             try {

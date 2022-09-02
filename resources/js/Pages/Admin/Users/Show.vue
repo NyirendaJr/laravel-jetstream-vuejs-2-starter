@@ -101,6 +101,7 @@
                             show-arrows
                         >
                             <v-tab>roles</v-tab>
+                            <v-tab>permissions</v-tab>
                         </v-tabs>
 
                         <v-divider/>
@@ -134,6 +135,43 @@
                                                     color="red"
                                                     text
                                                     class="text-center"
+                                                >
+                                                    <v-icon>mdi-close</v-icon>
+                                                </v-btn>
+                                            </template>
+                                        </v-data-table>
+                                    </v-card-text>
+                                </v-card>
+                            </v-tab-item>
+
+                            <v-tab-item>
+                                <v-card outlined>
+                                    <v-toolbar flat>
+                                        <v-spacer />
+                                        <v-btn
+                                            color="default"
+                                            text
+                                            @click="openAddPermissionToUserDialogForm"
+                                        >
+                                            <v-icon>mdi-plus</v-icon>
+                                            Add permission
+                                        </v-btn>
+                                    </v-toolbar>
+
+                                    <v-divider />
+
+                                    <v-card-text>
+                                        <v-data-table
+                                            :items="userAssignedPermissions"
+                                            :headers="userAssignedPermissionsTableHeaders"
+                                        >
+                                            <template #[`item.actions`]="{item}">
+                                                <v-btn
+                                                    @click="openRemovePermissionFromUserConfirmDialog(item)"
+                                                    color="red"
+                                                    text
+                                                    class="text-center"
+                                                    v-if="!permissionViaRole(item.id)"
                                                 >
                                                     <v-icon>mdi-close</v-icon>
                                                 </v-btn>
@@ -377,6 +415,55 @@
             </v-card>
         </v-dialog>
 
+        <!-- assign permissions to user dialog form -->
+        <v-dialog
+            persistent
+            max-width="924"
+            v-model="assignPermissionsToUserDialog"
+        >
+            <v-card>
+                <v-card-title
+                    class="text-h6 grey lighten-2 mb-3"
+                >
+                    Assign Permissions
+                </v-card-title>
+                <v-divider />
+                <v-card-text>
+                    <v-form
+                        ref="AssignPermissionsToUserForm"
+                    >
+                        <v-select
+                            :items="systemPermissions"
+                            v-model="selectedPermissions"
+                            label="Permission"
+                            placeholder="Select permission"
+                            outlined
+                            dense
+                            multiple
+                            persistent-placeholder
+                            chips
+                            deletable-chips
+                            small-chips
+                            :loading="permissionsLoading"
+                        />
+                    </v-form>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer />
+                    <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="assignPermissionsToUserDialog = false"
+                    >
+                        Close
+                    </v-btn>
+                    <v-btn tile color="success" @click="createPermissionUser">
+                        <v-icon>mdi-content-save-outline</v-icon>
+                        Save
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </app-layout>
 </template>
 
@@ -427,23 +514,42 @@ export default {
             addStoreToUserDialog: false,
             removeStoreFromUserDialog: false,
             newUserPasswordDialog: false,
-            newPassword: {}
+            newPassword: {},
+            userAssignedPermissions: [],
+            userAssignedPermissionsTableHeaders: [
+                {text: 'S/N', value: 'serial_number'},
+                {text: 'NAME', value: 'name'},
+                {text: 'ACTIONS', value: 'actions'}
+            ],
+            removePermissionFromUserConfirmDialog: false,
+            rolePermissions: [],
+            systemPermissions: [],
+            assignPermissionsToUserDialog: false,
+            selectedPermissions: [],
+            permissionsLoading: false,
         }
     },
 
     created() {
         this.processUserData()
         this.getSystemRoles()
+        this.getPermissions()
     },
 
     methods: {
         checkPermission,
         processUserData() {
             this.user = this.userData.data
-            console.log('process user data')
             console.log(this.user)
             this.userAssignedRoles = this.user.roles
+            this.userAssignedPermissions = this.user.permissions
+            this.rolePermissions = this.user.rolePermissions
+
             this.userAssignedRoles.forEach((element, index) => {
+                element['serial_number'] = index + 1
+            })
+
+            this.userAssignedPermissions.forEach((element, index) => {
                 element['serial_number'] = index + 1
             })
         },
@@ -554,6 +660,39 @@ export default {
             this.currentRole = item
             this.reAssignRoleFromUserDialog = true
         },
+
+        openAddPermissionToUserDialogForm() {
+            this.assignPermissionsToUserDialog = true
+        },
+
+        openRemovePermissionFromUserConfirmDialog(item) {
+            this.currentPermission = item
+            this.removePermissionFromUserConfirmDialog = true
+        },
+
+        permissionViaRole(permissionId) {
+            const found = this.rolePermissions.find(permission => permission.id === permissionId);
+            return found !== undefined;
+        },
+
+        async getPermissions() {
+            this.systemPermissions = []
+            this.permissionsLoading = true
+            const payload = {paginate: 'no'}
+            const { data } = await API.Permission.getPermissions(payload);
+            data.forEach((permission) => {
+                this.systemPermissions.push({
+                    text: permission.name,
+                    value: permission.id,
+                    disabled: this.permissionViaRole(permission.id),
+                })
+            });
+            this.permissionsLoading = false
+        },
+
+        async createPermissionUser() {
+
+        }
 
     }
 }
