@@ -6,12 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PermissionUpdateRequest;
 use App\Http\Resources\PermissionResource;
 use App\Repositories\PermissionRepository;
-use App\Validators\PermissionValidator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Prettus\Validator\Contracts\ValidatorInterface;
-use Prettus\Validator\Exceptions\ValidatorException;
 use Symfony\Component\HttpFoundation\Response;
 
 
@@ -27,11 +24,9 @@ class PermissionsController extends Controller
      * PermissionsController constructor.
      *
      * @param PermissionRepository $repository
-     * @param PermissionValidator $validator
      */
     public function __construct(
-        public PermissionRepository $repository,
-        public PermissionValidator $validator
+        public PermissionRepository $repository
     ){}
 
     /**
@@ -55,48 +50,13 @@ class PermissionsController extends Controller
      */
     public function update(PermissionUpdateRequest $request, int $id): JsonResponse
     {
-        try {
+        $this->repository->update($id, $request->validated());
 
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
-
-            $this->repository->update($id, $request->all());
-
-            return response()
-                ->json([
-                    'status' => true,
-                    'statusCode' => Response::HTTP_OK
-                ]);
-
-        } catch (ValidatorException $e) {
-
-            return response()->json([
-                'error'   => true,
-                'message' => $e->getMessageBag()
+        return response()
+            ->json([
+                'status' => true,
+                'statusCode' => Response::HTTP_OK
             ]);
-
-        }
     }
 
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        $deleted = $this->repository->delete($id);
-
-        if (request()->wantsJson()) {
-
-            return response()->json([
-                'message' => 'Permission deleted.',
-                'deleted' => $deleted,
-            ]);
-        }
-
-        return redirect()->back()->with('message', 'Permission deleted.');
-    }
 }
